@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Recommendation Form</title>
+</head>
+<body>
+    <h1>Music Recommendation Form</h1>
+    <form id="musicForm" method="post" action="/recommend/">
+        <label for="songName">Enter Song Name:</label><br>
+        <input type="text" id="songName" name="song_name"><br>
+        <button type="submit">Submit</button>
+    </form>
+
+    <div id="recommendation"></div>
+
+<script>
+    document.getElementById("musicForm").addEventListener("submit", async function (event) {
+        event.preventDefault();
+
+        const formData = new FormData(this);
+        const songName = formData.get("song_name");
+
+        const response = await fetch("/recommend/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ "song_name": songName })  // Corrected property name to "song_name"
+        });
+
+        const data = await response.json();
+
+        let html = "<h2>Recommended Songs:</h2>";
+        if (data.length > 0) {
+            html += "<ul>";
+            data.forEach(recommendedSong => {
+                html += `<li>${recommendedSong}</li>`;
+            });
+            html += "</ul>";
+        } else {
+            html += "<p>No songs found matching the input.</p>";
+        }
+
+        document.getElementById("recommendation").innerHTML = html;
+        });
+    </script>
+</body>
+</html>
